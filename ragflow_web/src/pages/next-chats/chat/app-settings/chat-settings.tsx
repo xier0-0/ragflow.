@@ -115,23 +115,23 @@ export function ChatSettings({ hasSingleChatBox }: ChatSettingsProps) {
   // 默认展开设置面板
 
   return (
-    <section className="p-5 pb-6 w-[440px] flex flex-col space-y-4">
-      <div className="flex justify-between items-center text-base pb-2 mb-2">
-        {t('chat.chatSetting')}
+    <section className="w-[440px] flex flex-col">
+      <div className="bg-bg-card border border-border-default/80 shadow-sm rounded-2xl p-5 pb-6 flex flex-col space-y-4 h-full">
+        <div className="flex justify-between items-center text-base pb-2 mb-2 border-b border-border-default/70">
+          {t('chat.chatSetting')}
+        </div>
+        <Form {...form}>
+          <form className="flex-1 flex flex-col min-h-0">
+            <section className="space-y-6 overflow-auto flex-1 pr-2 min-h-0">
+              <ChatBasicSetting></ChatBasicSetting>
+              <Separator />
+              <ChatPromptEngine></ChatPromptEngine>
+              <Separator />
+              <ChatModelSettings></ChatModelSettings>
+            </section>
+          </form>
+        </Form>
       </div>
-      <Form {...form}>
-        <form
-          className="flex-1 flex flex-col min-h-0"
-        >
-          <section className="space-y-6 overflow-auto flex-1 pr-4 min-h-0">
-            <ChatBasicSetting></ChatBasicSetting>
-            <Separator />
-            <ChatPromptEngine></ChatPromptEngine>
-            <Separator />
-            <ChatModelSettings></ChatModelSettings>
-          </section>
-        </form>
-      </Form>
     </section>
   );
 }

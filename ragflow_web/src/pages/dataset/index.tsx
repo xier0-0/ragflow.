@@ -22,7 +22,7 @@ export default function DatasetWrapper() {
 
   return (
     <KnowledgeBaseProvider knowledgeBase={data} loading={loading}>
-      <section className="flex h-full flex-col w-full">
+      <section className="flex h-full flex-col w-full bg-gradient-to-b from-bg-base to-bg-card/40">
         <PageHeader>
           <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" onClick={navigateToDatasetList}>
@@ -45,9 +45,9 @@ export default function DatasetWrapper() {
             </Breadcrumb>
           </div>
         </PageHeader>
-        <div className="flex flex-1 min-h-0">
+        <div className="flex flex-1 min-h-0 px-6 pb-6 gap-4">
           <SideBar></SideBar>
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 overflow-auto bg-bg-card border border-border-default/80 rounded-2xl shadow-sm p-4">
             <Outlet />
           </div>
         </div>

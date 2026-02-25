@@ -44,7 +44,7 @@ export default function SearchPage() {
   }, [checkOpenSetting]);
 
   return (
-    <section>
+    <section className="min-h-full bg-gradient-to-b from-bg-base to-bg-card/40">
       <PageHeader>
         <div className="flex items-center gap-3">
           <Button variant="outline" size="sm" onClick={navigateToSearchList}>
@@ -65,7 +65,7 @@ export default function SearchPage() {
           </Breadcrumb>
         </div>
       </PageHeader>
-      <div className="flex gap-3 w-full bg-bg-base">
+      <div className="flex gap-3 w-full px-6 pb-8">
         <div className="flex-1">
           {!isSearching && (
             <div className="animate-fade-in-down">

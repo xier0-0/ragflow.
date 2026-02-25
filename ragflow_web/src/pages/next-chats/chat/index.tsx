@@ -83,7 +83,7 @@ export default function Chat() {
 
   if (isDebugMode) {
     return (
-      <section className="pt-14 h-[100vh] pb-24">
+      <section className="pt-14 h-[100vh] pb-24 bg-gradient-to-b from-bg-base to-bg-card/40">
         <div className="flex items-center justify-between px-10 pb-5">
           <span className="text-2xl">
             {t('chat.multipleModels')} ({chatBoxIds.length}/3)
@@ -105,7 +105,7 @@ export default function Chat() {
   }
 
   return (
-    <section className="h-full flex flex-col">
+    <section className="h-full flex flex-col bg-gradient-to-b from-bg-base to-bg-card/40">
       <PageHeader>
         <div className="flex items-center gap-3">
           <Button variant="outline" size="sm" onClick={navigateToChatList}>
@@ -126,14 +126,16 @@ export default function Chat() {
           </Breadcrumb>
         </div>
       </PageHeader>
-      <div className="flex flex-1 min-h-0 pb-9">
+      <div className="flex flex-1 min-h-0 pb-9 px-6 gap-4">
         <Sessions handleConversationCardClick={handleSessionClick}></Sessions>
 
-        <Card className="flex-1 min-w-0 bg-transparent border-none shadow-none h-full">
+        <Card className="flex-1 min-w-0 bg-bg-card border border-border-default/80 shadow-sm h-full rounded-2xl">
           <CardContent className="flex p-0 h-full">
-            <Card className="flex flex-col flex-1 bg-transparent min-w-0">
+            <Card className="flex flex-col flex-1 bg-transparent min-w-0 border-r border-border-default/60 rounded-none">
               <CardHeader
-                className={cn('p-5', { 'border-b': hasSingleChatBox })}
+                className={cn('p-5 border-border-default/70', {
+                  'border-b': hasSingleChatBox,
+                })}
               >
                 <CardTitle className="flex justify-between items-center text-base">
                   <div className="truncate">{currentConversationName}</div>

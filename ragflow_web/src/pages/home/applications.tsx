@@ -7,10 +7,8 @@ import { Routes } from '@/routes';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
-import { Agents } from './agent-list';
 import { SeeAllAppCard } from './application-card';
 import { ChatList } from './chat-list';
-import { MemoryList } from './memory-list';
 import { SearchList } from './search-list';
 
 const IconMap = {
@@ -56,51 +54,51 @@ export function Applications() {
   };
 
   return (
-    <section className="mt-12">
-      <div className="flex justify-between items-center mb-5">
-        <h2 className="text-2xl font-semibold flex gap-2.5">
-          <HomeIcon
-            name={`${IconMap[val as keyof typeof IconMap]}`}
-            width={'32'}
+    <section className="mt-10">
+      <div className="bg-bg-card border border-border-default/80 rounded-2xl shadow-sm p-5 space-y-4">
+        <div className="flex flex-wrap gap-3 items-center justify-between">
+          <h2 className="text-xl font-semibold flex gap-2.5 items-center">
+            <HomeIcon
+              name={`${IconMap[val as keyof typeof IconMap]}`}
+              width={'28'}
+            />
+            {options.find((x) => x.value === val)?.label}
+          </h2>
+          <Segmented
+            options={options}
+            value={val}
+            onChange={handleChange}
+            buttonSize="lg"
+            className="bg-bg-base/50 rounded-full"
+            activeClassName="text-bg-base bg-metallic-gradient border-none shadow-sm"
+          ></Segmented>
+        </div>
+        <CardSineLineContainer>
+          {val === Routes.Chats && (
+            <ChatList
+              setListLength={(length: number) => setListLength(length)}
+              setLoading={(loading: boolean) => setLoading(loading)}
+            ></ChatList>
+          )}
+          {val === Routes.Searches && (
+            <SearchList
+              setListLength={(length: number) => setListLength(length)}
+              setLoading={(loading: boolean) => setLoading(loading)}
+            ></SearchList>
+          )}
+          {listLength > 0 && (
+            <SeeAllAppCard
+              click={() => handleNavigate({ isCreate: false })}
+            ></SeeAllAppCard>
+          )}
+        </CardSineLineContainer>
+        {listLength <= 0 && !loading && (
+          <EmptyAppCard
+            type={EmptyTypeMap[val as keyof typeof EmptyTypeMap]}
+            onClick={() => handleNavigate({ isCreate: true })}
           />
-          {options.find((x) => x.value === val)?.label}
-        </h2>
-        <Segmented
-          options={options}
-          value={val}
-          onChange={handleChange}
-          buttonSize="xl"
-          // className="bg-bg-card border border-border-button rounded-lg"
-          // activeClassName="bg-text-primary border-none rounded-lg"
-        ></Segmented>
+        )}
       </div>
-      {/* <div className="flex flex-wrap gap-4"> */}
-      <CardSineLineContainer>
-        {val === Routes.Chats && (
-          <ChatList
-            setListLength={(length: number) => setListLength(length)}
-            setLoading={(loading: boolean) => setLoading(loading)}
-          ></ChatList>
-        )}
-        {val === Routes.Searches && (
-          <SearchList
-            setListLength={(length: number) => setListLength(length)}
-            setLoading={(loading: boolean) => setLoading(loading)}
-          ></SearchList>
-        )}
-        {listLength > 0 && (
-          <SeeAllAppCard
-            click={() => handleNavigate({ isCreate: false })}
-          ></SeeAllAppCard>
-        )}
-      </CardSineLineContainer>
-      {listLength <= 0 && !loading && (
-        <EmptyAppCard
-          type={EmptyTypeMap[val as keyof typeof EmptyTypeMap]}
-          onClick={() => handleNavigate({ isCreate: true })}
-        />
-      )}
-      {/* </div> */}
     </section>
   );
 }

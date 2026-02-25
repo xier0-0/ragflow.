@@ -21,17 +21,11 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 import { BellButton } from './bell-button';
 
-const handleDocHelpCLick = () => {
-  window.open('https://ragflow.io/docs/dev/category/guides', 'target');
-};
-
 const PathMap = {
+  [Routes.Root]: [Routes.Root],
   [Routes.Datasets]: [Routes.Datasets],
   [Routes.Chats]: [Routes.Chats],
   [Routes.Searches]: [Routes.Searches],
-  [Routes.Agents]: [Routes.Agents],
-  [Routes.Memories]: [Routes.Memories, Routes.Memory, Routes.MemoryMessage],
-  [Routes.Files]: [Routes.Files],
 } as const;
 
 export function Header() {
@@ -102,70 +96,72 @@ export function Header() {
   }, [navigate]);
 
   const activePathName = useMemo(() => {
-    const name = Object.keys(PathMap).find((x: string) => {
-      const pathList = PathMap[x as keyof typeof PathMap];
-      return pathList.some((y: string) => pathname.indexOf(y) > -1);
+    const found = tagsData.find((tag) => pathname.startsWith(tag.path));
+    if (found) return found.path;
+    const fallbackKey = Object.keys(PathMap).find((x) => {
+      const paths = PathMap[x as keyof typeof PathMap];
+      return paths.some((p) => pathname.includes(p));
     });
-    if (name) {
-      return name;
-    } else {
-      return pathname;
-    }
-  }, [pathname]);
+    return fallbackKey || Routes.Root;
+  }, [pathname, tagsData]);
 
   return (
-    <section className="py-5 px-10 flex justify-between items-center ">
-      <div className="flex items-center gap-4">
-        <img
-          src={`${import.meta.env.BASE_URL}logo.png`}
-          alt="logo"
-          className="size-10 mr-[12] cursor-pointer"
-          onClick={handleLogoClick}
-        />
-      </div>
-      <Segmented
-        rounded="xxxl"
-        sizeType="xl"
-        buttonSize="xl"
-        options={options}
-        value={activePathName}
-        onChange={handleChange}
-        activeClassName="text-bg-base bg-metallic-gradient border-b-[#00BEB4] border-b-2"
-      ></Segmented>
-      <div className="flex items-center gap-5 text-text-badge">
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <div className="flex items-center gap-1">
-              {t(`common.${camelCase(language)}`)}
-              <ChevronDown className="size-4" />
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {items.map((x) => (
-              <DropdownMenuItem key={x.key} onClick={handleItemClick(x.key)}>
-                {x.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <Button variant={'ghost'} onClick={onThemeClick}>
-          {theme === 'light' ? <Sun /> : <Moon />}
-        </Button>
-        <BellButton></BellButton>
-        <div className="relative">
-          <RAGFlowAvatar
-            name={nickname}
-            avatar={avatar}
-            isPerson
-            className="size-8 cursor-pointer"
-            onClick={navigateToOldProfile}
-          ></RAGFlowAvatar>
-          {/* Temporarily hidden */}
-          {/* <Badge className="h-5 w-8 absolute font-normal p-0 justify-center -right-8 -top-2 text-bg-base bg-gradient-to-l from-[#42D7E7] to-[#478AF5]">
-            Pro
-          </Badge> */}
+    <header className="sticky top-0 z-30 bg-bg-base/80 backdrop-blur border-b border-border-default">
+      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-6">
+        <div className="flex items-center gap-3">
+          <img
+            src={`${import.meta.env.BASE_URL}logo.png`}
+            alt="logo"
+            className="size-10 cursor-pointer"
+            onClick={handleLogoClick}
+          />
+          <span className="text-lg font-semibold hidden sm:inline-flex">
+            魔视智能知识库检索系统
+          </span>
+        </div>
+        <div className="flex-1 flex justify-center">
+          <Segmented
+            rounded="xxxl"
+            sizeType="xl"
+            buttonSize="xl"
+            options={options}
+            value={activePathName}
+            onChange={handleChange}
+            className="bg-bg-card px-1 py-1 rounded-full shadow-sm"
+            activeClassName="text-bg-base bg-metallic-gradient border-none shadow-sm"
+          ></Segmented>
+        </div>
+        <div className="flex items-center gap-4 text-text-badge">
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <div className="flex items-center gap-1">
+                {t(`common.${camelCase(language)}`)}
+                <ChevronDown className="size-4" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {items.map((x) => (
+                <DropdownMenuItem key={x.key} onClick={handleItemClick(x.key)}>
+                  {x.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button variant={'ghost'} onClick={onThemeClick} className="h-9 w-9 p-0">
+            {theme === 'light' ? <Sun /> : <Moon />}
+          </Button>
+          <BellButton></BellButton>
+          <div className="relative">
+            <RAGFlowAvatar
+              name={nickname}
+              avatar={avatar}
+              isPerson
+              className="size-8 cursor-pointer"
+              onClick={navigateToOldProfile}
+            ></RAGFlowAvatar>
+          </div>
         </div>
       </div>
-    </section>
+    </header>
   );
 }

@@ -293,7 +293,7 @@ const SearchSetting: React.FC<SearchSettingProps> = ({
   return (
     <div
       className={cn(
-        'text-text-primary border p-4 pb-12 rounded-lg',
+        'text-text-primary border border-border-default/80 bg-bg-card shadow-sm p-4 pb-12 rounded-2xl',
         {
           'animate-fade-in-right': open,
           'animate-fade-out-right': !open,
