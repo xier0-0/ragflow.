@@ -7,8 +7,8 @@ const Home = () => {
     <section>
       <NextBanner></NextBanner>
       <section className="h-[calc(100dvh-260px)] overflow-auto px-10">
-        <Datasets></Datasets>
         <Applications></Applications>
+        <Datasets></Datasets>
       </section>
     </section>
   );
