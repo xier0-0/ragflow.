@@ -15,8 +15,8 @@
 mkdir -p tei_data
 cd tei_data
 
-# 模型与端口
-export MODEL="Qwen/Qwen3-Embedding-0.6B"
+# 模型与端口（示例使用高性能多语言嵌入模型 Qwen/Qwen3-Embedding-8B，见 [模型卡](https://huggingface.co/Qwen/Qwen3-Embedding-8B)）
+export MODEL="Qwen/Qwen3-Embedding-8B"
 export VOLUME="$PWD"
 export PORT=20078
 ```
@@ -138,7 +138,7 @@ print(len(resp.data[0].embedding), resp.data[0].embedding[:5])
 | 项       | 值 |
 |----------|-----|
 | 提供商   | **HuggingFace** |
-| 模型名称 | **Qwen/Qwen3-Embedding-0.6B**（与上面 `MODEL` 一致） |
+| 模型名称 | **Qwen/Qwen3-Embedding-8B**（与上面 `MODEL` 一致） |
 | Base URL | **http://127.0.0.1:20078**（或实际主机 IP） |
 | API Key  | 任意，如 **dummy** |
 
@@ -148,7 +148,7 @@ print(len(resp.data[0].embedding), resp.data[0].embedding[:5])
 user_default_llm:
   default_models:
     embedding_model:
-      name: 'Qwen/Qwen3-Embedding-0.6B'
+      name: 'Qwen/Qwen3-Embedding-8B'
       factory: 'HuggingFace'
       base_url: 'http://127.0.0.1:20078'
       api_key: 'dummy'
