@@ -70,17 +70,18 @@ export function Segmented({
   sizeType = 'default',
   buttonSize = 'default',
 }: SegmentedProps) {
-  const [selectedValue, setSelectedValue] = React.useState<
+  const [internalValue, setInternalValue] = React.useState<
     SegmentedValue | undefined
   >(value);
+  const selectedValue = value !== undefined ? value : internalValue;
   React.useEffect(() => {
-    setSelectedValue(value);
+    if (value !== undefined) setInternalValue(value);
   }, [value]);
   const handleOnChange = (e: SegmentedValue) => {
     if (onChange) {
       onChange(e);
     }
-    setSelectedValue(e);
+    setInternalValue(e);
   };
   return (
     <div

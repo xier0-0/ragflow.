@@ -95,30 +95,47 @@ export function Header() {
     navigate(Routes.Root);
   }, [navigate]);
 
+  // 与主页一致的镂空 logo：用 logo 做遮罩，填充 --bg-base，随主题变化
+  const logoUrl = useMemo(() => {
+    const base = (import.meta.env.BASE_URL ?? '/').replace(/\/?$/, '/');
+    return `${base}logo.svg`;
+  }, []);
+
   const activePathName = useMemo(() => {
-    const base = import.meta.env.BASE_URL || '/';
-    const normalized = pathname.startsWith(base)
-      ? pathname.slice(base.endsWith('/') ? base.length - 1 : base.length)
-      : pathname;
+    const base = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '') || '/';
+    const normalized =
+      base !== '/' && pathname.startsWith(base)
+        ? pathname.slice(base.length) || '/'
+        : pathname;
     const path = normalized.startsWith('/') ? normalized : `/${normalized}`;
 
-    const found = tagsData.find((tag) => path.startsWith(tag.path));
+    // 首页仅精确匹配 '/' 或 ''，避免 /datasets、/next-chats 等被误判为首页
+    if (path === '/' || path === '') return Routes.Root;
+
+    const found = tagsData.find(
+      (tag) => tag.path !== Routes.Root && path.startsWith(tag.path),
+    );
     if (found) return found.path;
     const fallbackKey = Object.keys(PathMap).find((x) => {
       const paths = PathMap[x as keyof typeof PathMap];
       return paths.some((p) => path.includes(p));
     });
-    return fallbackKey || Routes.Root;
+    return (fallbackKey as Routes | undefined) ?? Routes.Root;
   }, [pathname, tagsData]);
 
   return (
     <header className="sticky top-0 z-30 bg-bg-base/80 backdrop-blur border-b border-border-default">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-6">
         <div className="flex items-center gap-3">
-          <img
-            src={`${import.meta.env.BASE_URL}logo.svg`}
-            alt="logo"
-            className="size-10 cursor-pointer"
+          <div
+            role="img"
+            aria-label="logo"
+            className="size-10 cursor-pointer shrink-0 [mask-size:contain] [mask-repeat:no-repeat] [mask-position:center] [-webkit-mask-size:contain] [-webkit-mask-repeat:no-repeat] [-webkit-mask-position:center]"
+            style={{
+              backgroundColor: 'var(--bg-base)',
+              maskImage: `url(${logoUrl})`,
+              WebkitMaskImage: `url(${logoUrl})`,
+            }}
             onClick={handleLogoClick}
           />
           <span className="text-lg font-semibold hidden sm:inline-flex">
@@ -127,6 +144,7 @@ export function Header() {
         </div>
         <div className="flex-1 flex justify-center">
           <Segmented
+            key={activePathName}
             rounded="xxxl"
             sizeType="xl"
             buttonSize="xl"
