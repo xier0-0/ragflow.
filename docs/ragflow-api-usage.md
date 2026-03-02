@@ -1,6 +1,8 @@
-# RAGFlow 接口使用说明（面向同事）
+# RAGFlow知识库接口使用说明（面向开发者）
 
-本文档说明如何**仅通过命令行（curl）** 使用本机已部署的 RAGFlow 服务，完成知识库管理、文档管理、聊天与检索，不依赖前端页面。所有接口均以 [RAGFlow HTTP API v0.24.0](https://ragflow.io/docs/v0.24.0/http_api_reference) 为准，未在官方文档中出现的接口不做描述。
+面向开发者的 HTTP 接口使用说明（知识库 / 文档 / 聊天 / 检索），示例以 curl 为主，亦可使用脚本或其它 HTTP 客户端。
+
+本文档说明如何通过 **HTTP 接口** 使用本机已部署的 RAGFlow 服务，完成知识库管理、文档管理、聊天与检索；示例以命令行（curl）为主，同样适用于脚本、Postman 或其他 HTTP 客户端。所有接口以 [RAGFlow HTTP API v0.24.0](https://ragflow.io/docs/v0.24.0/http_api_reference) 为准，未在官方文档中出现的接口不做描述。
 
 ---
 
@@ -26,6 +28,8 @@ export DATASET_ID="75ad2f5c15e911f1a394d51da451b596"
 
 **错误码**（摘自官方文档）：400  Bad Request；401  Unauthorized；403  Forbidden；404  Not Found；500  Internal Server Error；1001  Invalid Chunk ID；1002  Chunk Update Failed。
 
+**关于前端页面**：本说明以命令行（API）操作为主。项目同时提供 **Web 前端**，在浏览器打开上述服务地址（如 `http://127.0.0.1:20088`，与 API 同源）即可访问管理界面。完成下列接口操作后，可到前端对应页面查看是否有新增、变更或状态变化，便于核对结果。
+
 ---
 
 ## 二、知识库（Dataset）管理
@@ -48,6 +52,8 @@ curl -s -X GET \
 
 **返回**：`code: 0` 时，`data` 为知识库数组，`total_datasets` 为总数。每个元素包含 `id`、`name`、`description`、`document_count`、`chunk_count`、`embedding_model`、`similarity_threshold`、`vector_similarity_weight`、`status` 等。
 
+可在前端 **「知识库」** 列表页对照查看，确认与接口返回一致、是否有新增项。
+
 ---
 
 ### 2.2 创建知识库（增）
@@ -66,7 +72,7 @@ curl -s -X POST \
   -d '{"name": "my-kb"}'
 ```
 
-成功时返回 `data` 中包含新知识库的 `id`，后续操作需用到该 `id`。
+成功时返回 `data` 中包含新知识库的 `id`，后续操作需用到该 `id`。可在前端 **「知识库」** 列表页查看是否出现新知识库。
 
 ---
 
@@ -87,6 +93,8 @@ curl -s -X PUT \
   -d '{"name": "my-kb-v2", "description": "更新后的描述"}'
 ```
 
+可在前端 **「知识库」** 列表或该知识库详情页查看名称、描述等是否已更新。
+
 ---
 
 ### 2.4 删除知识库（请谨慎使用）
@@ -104,6 +112,8 @@ curl -s -X DELETE \
   -H "Content-Type: application/json" \
   -d '{"ids": ["id1", "id2"]}'
 ```
+
+删除后可在前端 **「知识库」** 列表确认对应项已消失。
 
 ---
 
@@ -154,7 +164,7 @@ else
 fi
 ```
 
-若上传多个文件并希望全部解析，可把 `document_ids` 设为所有返回的 `data[].id`，或多次调用解析接口。解析为异步，可通过「3.2 列出文档」查看 `run` 是否为 `DONE`。
+若上传多个文件并希望全部解析，可把 `document_ids` 设为所有返回的 `data[].id`，或多次调用解析接口。解析为异步，可通过「3.2 列出文档」查看 `run` 是否为 `DONE`。可在前端进入该知识库的 **「文档」** 页，查看是否出现新文档及解析状态（如进行中/完成）的变化。
 
 ---
 
@@ -323,7 +333,7 @@ curl -s -X POST \
   }'
 ```
 
-返回的 `data.id` 即为 `chat_id`，后续会话与对话均使用该 id。
+返回的 `data.id` 即为 `chat_id`，后续会话与对话均使用该 id。可在前端 **「聊天助手」/「对话」** 相关列表页查看是否出现新助手。
 
 ---
 
@@ -340,6 +350,8 @@ curl -s -X GET \
   "$RAGFLOW_HOST/api/v1/chats?page=1&page_size=10" \
   -H "Authorization: Bearer $RAGFLOW_API_KEY"
 ```
+
+可与前端 **「聊天助手」** 列表对照，确认数量与项是否一致。
 
 ---
 
@@ -397,7 +409,7 @@ curl -s -X POST \
   -d '{"name": "new session"}'
 ```
 
-返回的 `data.id` 即为 `session_id`，对话时可传入以延续该会话。
+返回的 `data.id` 即为 `session_id`，对话时可传入以延续该会话。可在前端该助手的对话页中查看 **会话列表** 是否新增该会话。
 
 **示例**：查看某聊天助手下的会话
 
@@ -426,7 +438,7 @@ curl -s -X GET \
   -H "Authorization: Bearer $RAGFLOW_API_KEY"
 ```
 
-**返回**：`code: 0` 时，`data` 为数组；若该 id 存在则含一条记录，包含 `id`、`name`、`avatar`、`dataset_ids`/`datasets`、`llm`、`prompt` 等，便于确认后再调用 5.7 进行对话。若不存在则 `data` 为空数组。
+**返回**：`code: 0` 时，`data` 为数组；若该 id 存在则含一条记录，包含 `id`、`name`、`avatar`、`dataset_ids`/`datasets`、`llm`、`prompt` 等，便于确认后再调用 5.7 进行对话。若不存在则 `data` 为空数组。前端进入该助手的设置或详情页也可查看上述信息并核对。
 
 ---
 
@@ -598,7 +610,113 @@ curl -s -X GET "$RAGFLOW_HOST/api/v1/chats?page=1&page_size=5" \
 
 ---
 
-## 七、参考链接
+## 七、Python 简单示例
+
+以下为 Python 调用上述接口的极简示例，对应「知识库」「聊天」「检索」各一例。依赖：`pip install requests`。运行前请设置环境变量 `RAGFLOW_HOST`、`RAGFLOW_API_KEY`，知识库与聊天示例需 `DATASET_ID`、`CHAT_ID`（可从第二节、第五节接口获取）。
+
+### 7.1 知识库：列出知识库
+
+```python
+import os
+import requests
+
+host = os.environ.get("RAGFLOW_HOST", "http://127.0.0.1:20088")
+api_key = os.environ.get("RAGFLOW_API_KEY", "")
+url = f"{host}/api/v1/datasets"
+resp = requests.get(url, params={"page": 1, "page_size": 5}, headers={"Authorization": f"Bearer {api_key}"})
+data = resp.json()
+if data.get("code") == 0:
+    for item in data.get("data", []):
+        print(item.get("id"), item.get("name"), item.get("document_count"))
+else:
+    print("请求失败:", data)
+```
+
+### 7.2 聊天：发送一条对话（原生接口）
+
+```python
+import os
+import requests
+
+host = os.environ.get("RAGFLOW_HOST", "http://127.0.0.1:20088")
+api_key = os.environ.get("RAGFLOW_API_KEY", "")
+chat_id = os.environ.get("CHAT_ID", "")  # 从 5.1 创建或 5.2 列表获取
+url = f"{host}/api/v1/chats/{chat_id}/completions"
+resp = requests.post(
+    url,
+    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+    json={"question": "请用一句话介绍知识库内容", "stream": False},
+)
+data = resp.json()
+if data.get("code") == 0 and data.get("data"):
+    print("回复:", data["data"].get("answer", ""))
+else:
+    print("请求失败:", data)
+```
+
+### 7.3 检索：按问题检索知识库片段
+
+```python
+import os
+import requests
+
+host = os.environ.get("RAGFLOW_HOST", "http://127.0.0.1:20088")
+api_key = os.environ.get("RAGFLOW_API_KEY", "")
+dataset_id = os.environ.get("DATASET_ID", "")  # 从 2.1 列表或 2.2 创建获取
+url = f"{host}/api/v1/retrieval"
+resp = requests.post(
+    url,
+    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+    json={
+        "question": "RAGFlow 的优势是什么？",
+        "dataset_ids": [dataset_id],
+        "page_size": 5,
+        "highlight": True,
+    },
+)
+data = resp.json()
+if data.get("code") == 0:
+    for chunk in data.get("data", {}).get("chunks", [])[:3]:
+        print("---")
+        print(chunk.get("content", "")[:200])
+else:
+    print("请求失败:", data)
+```
+
+以上示例仅做最小可运行参考，错误处理与参数可依上文各节接口说明扩展。
+
+---
+
+## 八、接口核对说明
+
+下表已与仓库内 `api/apps/sdk/` 下实现逐一对照，路径与方法一致（统一前缀 `/api/v1`），
+可在项目/mnt/cfs/zhangjiyuan/ragflow./中对应查看。
+
+| 章节 | 接口 | 方法 | 实现文件 |
+|------|------|------|----------|
+| 2.1 | `/datasets` | GET | sdk/dataset.py |
+| 2.2 | `/datasets` | POST | sdk/dataset.py |
+| 2.3 | `/datasets/{dataset_id}` | PUT | sdk/dataset.py |
+| 2.4 | `/datasets` | DELETE | sdk/dataset.py |
+| 3.1 | `/datasets/{dataset_id}/documents` | POST | sdk/doc.py |
+| 3.2 | `/datasets/{dataset_id}/documents` | GET | sdk/doc.py |
+| 3.3 | `/datasets/{dataset_id}/documents/{document_id}` | GET | sdk/doc.py |
+| 3.4 | `/datasets/{dataset_id}/documents/{document_id}` | PUT | sdk/doc.py |
+| 3.5 | `/datasets/{dataset_id}/documents` | DELETE | sdk/doc.py |
+| 3.6 | `/datasets/{dataset_id}/chunks` | POST / DELETE | sdk/doc.py |
+| 四 | `/retrieval` | POST | sdk/doc.py |
+| 5.1 | `/chats` | POST | sdk/chat.py |
+| 5.2 / 5.6 | `/chats` | GET | sdk/chat.py |
+| 5.3 | `/chats/{chat_id}` | PUT | sdk/chat.py |
+| 5.4 | `/chats` | DELETE | sdk/chat.py |
+| 5.5 | `/chats/{chat_id}/sessions` | POST / GET / DELETE | sdk/session.py |
+| 5.5 | `/chats/{chat_id}/sessions/{session_id}` | PUT | sdk/session.py |
+| 5.7 方式一 | `/chats/{chat_id}/completions` | POST | sdk/session.py |
+| 5.7 方式二 | `/chats_openai/{chat_id}/chat/completions` | POST | sdk/session.py |
+
+---
+
+## 九、参考链接
 
 - 获取 API Key：[Acquire RAGFlow API key](https://ragflow.io/docs/acquire_ragflow_api_key)
 - HTTP API 完整说明（v0.24.0）：[HTTP API | RAGFlow](https://ragflow.io/docs/v0.24.0/http_api_reference)
